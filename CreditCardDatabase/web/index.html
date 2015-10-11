@@ -1,0 +1,29 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $("button").click(function(){
+  
+        $.post("query",
+        {
+            query:$(this).html(),
+        },
+        function(data,status){
+            alert("Data: " + data + "\nStatus: " + status);
+        });
+  });
+});
+</script>
+</head>
+
+<body>
+
+<button>Query1</button>
+<button>Query2</button>
+<button>Query3</button>
+<button>Query4</button>
+<button>Query5</button>
+</body>
+
+</html> 

@@ -18,6 +18,14 @@ CREATE TABLE "organization"
   	CHECK (OId LIKE 'o%')
 );
 
+CREATE TABLE "card_owner"
+(
+	Id varchar(5) NOT NULL,
+	PRIMARY KEY(Id),
+	CHECK (Id LIKE 'o%' or Id LIKE 'p%')
+);
+
+
 CREATE TABLE "signer"
 (
 	OId varchar(5) NOT NULL,
@@ -32,12 +40,11 @@ CREATE TABLE "signer"
 CREATE TABLE "card"
 (
 	CId varchar(5) NOT NULL,
-	OwnerID varchar(5) NOT NULL,
+	OwnerId varchar(5) NOT NULL,
 	Bal INT NOT NULL,
 	Lim INT NOT NULL,
 	PRIMARY KEY (CId),
-	FOREIGN KEY (OwnerID) REFERENCES person(PId),
-	FOREIGN KEY (OwnerID) REFERENCES organization(OId),
+	FOREIGN KEY (OwnerId) REFERENCES card_owner(Id),
 	CHECK (CId LIKE 'c%'),
 	CHECK (Bal>=0),
 	CHECK (Lim>=0)
@@ -47,43 +54,147 @@ CREATE TABLE "authorized"
 (
 	PId varchar(5) NOT NULL,
 	CId varchar(5) NOT NULL,
-	PRIMARY KEY(PId,CId),
+	PRIMARY KEY (PId,CId),
+	FOREIGN KEY (PId) REFERENCES person(PId),
+	FOREIGN KEY (CId) REFERENCES card(CId),
 	CHECK (PId LIKE 'p%'),
 	CHECK (CId LIKE 'c%')
-)
+);
 
 
-CREATE VIEW "authuser"  AS
+CREATE VIEW "authuser"(PId,CId)  AS
 	SELECT	*
 	FROM	authorized
 ;
 
-INSERT INTO "authuser"
+INSERT INTO "authuser"(PId,CId)
 	SELECT S.PId,C.CId
-	FROM signer S,card C
-	WHERE　(S.OId=C.OwnerID)
+	FROM "signer" S,"card" C
+	WHERE (S.OId=C.OwnerId)
 ;
 
-INSERT INTO "person" (name) VALUES
-	('Ann');
-INSERT INTO "person" (name) VALUES
-	('John');
-INSERT INTO "person" (name) VALUES
-	('Joe');
-INSERT INTO "person" (name) VALUES
-	('May');
-INSERT INTO "person" (name) VALUES
-	('Faye');
-INSERT INTO "person" (name) VALUES
-	('Ann');
-INSERT INTO "person" (name) VALUES
-	('Bill');
-INSERT INTO "person" (name) VALUES
-	('Sally');
-INSERT INTO "person" (name) VALUES
-	('Miriam');
-INSERT INTO "person" (name) VALUES
-	('April');
+INSERT INTO "person" (PId,Name) VALUES
+	('p1','Ann');
+INSERT INTO "person" (PId,Name) VALUES
+	('p2','John');
+INSERT INTO "person" (PId,Name) VALUES
+	('p3','Joe');
+INSERT INTO "person" (PId,Name) VALUES
+	('p4','May');
+INSERT INTO "person" (PId,Name) VALUES
+	('p5','Faye');
+INSERT INTO "person" (PId,Name) VALUES
+	('p6','Ann');
+INSERT INTO "person" (PId,Name) VALUES
+	('p7','Bill');
+INSERT INTO "person" (PId,Name) VALUES
+	('p8','Sally');
+INSERT INTO "person" (PId,Name) VALUES
+	('p9','Miriam');
+INSERT INTO "person" (PId,Name) VALUES
+	('p10','April');
+
+
+INSERT INTO "organization"(OId,Name) VALUES
+	('o1','Acme');
+INSERT INTO "organization"(OId,Name) VALUES
+	('o2','GoodMood');
+INSERT INTO "organization"(OId,Name) VALUES
+	('o3','SuperiorCruft');
+INSERT INTO "organization"(OId,Name) VALUES
+	('o4','AwesomeProducts');
+
+INSERT INTO "card_owner" (Id)
+	SELECT O.OId
+	FROM "organization" O;
+	
+INSERT INTO "card_owner" (Id)
+	SELECT P.PId
+	FROM "person" P;
+
+	
+INSERT INTO "signer"(OId,PId) VALUES
+	('o1','p4');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o1','p3');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o2','p1');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o2','p4');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o3','p5');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o4','p1');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o4','p6');
+INSERT INTO "signer"(OId,PId) VALUES
+	('o4','p7');
 
 
 
+
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c1','o1',10001,11000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c2','o2',18000,26000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c3','o3',27500,28000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c4','o4',26500,27200);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c5','p1',1000,26000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c6','p3',5000,28000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c7','p5',5000,20000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c8','p4',5000,26000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c9','p6',3000,25000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c10','p7',4000,30000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c11','p9',4000,30000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c12','p10',4000,30000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c13','p9',1000,10000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c14','p9',2000,10000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c15','p9',2000,50000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c16','p8',2000,24000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c17','p8',0,24000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c18','p8',110,2000);
+INSERT INTO "card"(CId,OwnerId,Bal,Lim) VALUES
+	('c19','p8',220,2000);
+
+
+
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p2','c2');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p3','c10');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p4','c10');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p6','c12');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p7','c5');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p8','c1');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p8','c2');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p8','c3');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p9','c1');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p9','c2');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p9','c3');
+INSERT INTO "authorized"(PId,CId) VALUES
+	('p10','c4');
