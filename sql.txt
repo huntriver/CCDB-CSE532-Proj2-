@@ -62,16 +62,7 @@ CREATE TABLE "authorized"
 );
 
 
-CREATE VIEW "authuser"(PId,CId)  AS
-	SELECT	*
-	FROM	authorized
-;
 
-INSERT INTO "authuser"(PId,CId)
-	SELECT S.PId,C.CId
-	FROM "signer" S,"card" C
-	WHERE (S.OId=C.OwnerId)
-;
 
 INSERT INTO "person" (PId,Name) VALUES
 	('p1','Ann');
@@ -198,3 +189,19 @@ INSERT INTO "authorized"(PId,CId) VALUES
 	('p9','c3');
 INSERT INTO "authorized"(PId,CId) VALUES
 	('p10','c4');
+
+CREATE VIEW "authuser"(PId,CId)  AS(
+	SELECT	*
+	FROM	authorized
+	UNION
+	SELECT S.PId,C.CId
+	FROM "signer" S,"card" C
+	WHERE (S.OId=C.OwnerId)
+	)
+;
+
+create view "direct" as
+	select *
+	From "authuser";
+
+	
