@@ -69,36 +69,55 @@ public class query extends HttpServlet {
                     break;
                 }
                 case '3': {
-                    s = "select distinct C.Cid\n" +
-"from \"card\" C, \"signer\" S, \"card\" C1\n" +
-"Where\n" +
-"(\n" +
-"  S.OId=C.OwnerId and\n" +
-"  S.PId=C1.OwnerID and\n" +
-"  C1.Lim>=25000\n" +
-"\n" +
-");";
+                    s = "select distinct C.Cid\n"
+                            + "from \"card\" C, \"signer\" S, \"card\" C1\n"
+                            + "Where\n"
+                            + "(\n"
+                            + "  S.OId=C.OwnerId and\n"
+                            + "  S.PId=C1.OwnerID and\n"
+                            + "  C1.Lim>=25000\n"
+                            + "\n"
+                            + ");";
                     out.println("<tr><th>Card ID</th></tr>");
                     break;
                 }
                 case '4': {
-                    s = "select P1.PId,P1.Name,P2.PId,P2.Name\n"
-                            + "FROM \"person\" P1, \"person\" P2, \"authorized\" A, \"organization\" O,\"signer\" S,\"card\" C\n"
-                            + "WHERE\n"
-                            + " (\n"
-                            + "  P1.PId=A.PId and A.CId=C.CId and C.OwnerId=O.OId and O.OId=S.OId and S.PId=P2.PId and C.Lim-C.Bal<1000\n"
-                            + " )";
-                    out.println("<tr><th>User ID</th><th>User Name</th><th>Signer ID</th><th>Signer name</th></tr>");
+                    s = "with recursive  \"indirect\" as (\n"
+                            + "	select *\n"
+                            + "	From \"direct\"\n"
+                            + "	union \n"
+                            + "	select D.PId,I.CId \n"
+                            + "	From \"direct\" D, \"indirect\" I, \"card\" C\n"
+                            + "	 where (\n"
+                            + "		D.CId=C.CId and\n"
+                            + "		C.OwnerId=I.PId\n"
+                            + "	)\n"
+                            + "	)\n"
+                            + "select P.PId,P.Name,I.Cid \n"
+                            + "From \"indirect\" I, \"person\" P\n"
+                            + "Where I.PId=P.PId;";
+                    out.println("<tr><th>User ID</th><th>User Name</th><th>Card ID</th></tr>");
                     break;
                 }
                 case '5': {
-                    s = "select P1.PId,P1.Name,P2.PId,P2.Name\n"
-                            + "FROM \"person\" P1, \"person\" P2, \"authorized\" A, \"organization\" O,\"signer\" S,\"card\" C\n"
-                            + "WHERE\n"
-                            + " (\n"
-                            + "  P1.PId=A.PId and A.CId=C.CId and C.OwnerId=O.OId and O.OId=S.OId and S.PId=P2.PId and C.Lim-C.Bal<1000\n"
-                            + " )";
-                    out.println("<tr><th>User ID</th><th>User Name</th><th>Signer ID</th><th>Signer name</th></tr>");
+                    s = "with recursive \"indirect\" as (\n"
+                            + "	select *\n"
+                            + "	From \"direct\"\n"
+                            + "	union\n"
+                            + "	select D.PId,I.CId \n"
+                            + "	From \"direct\" D, \"indirect\" I, \"card\" C\n"
+                            + "	 where (\n"
+                            + "		D.CId=C.CId and\n"
+                            + "		C.OwnerId=I.PId\n"
+                            + "	)\n"
+                            + "	)\n"
+                            + "\n"
+                            + "select sum(C.Bal)\n"
+                            + "From \"indirect\" I, \"card\" C, \"person\" P\n"
+                            + "WHERE (I.PId=P.PId and\n"
+                            + "	P.Name='Joe'and\n"
+                            + "	C.CId=I.CId)";
+                    out.println("<tr><th>Total Balance</th></tr>");
                     break;
                 }
                 default:
