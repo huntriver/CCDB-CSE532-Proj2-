@@ -1,29 +1,74 @@
 <html>
-<head>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-  $("button").click(function(){
-  
-        $.post("query",
-        {
-            query:$(this).html(),
-        },
-        function(data,status){
-            alert("Data: " + data + "\nStatus: " + status);
-        });
-  });
-});
-</script>
-</head>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                
+                $("button").click(function () {
+                    var s=$(this).html();
+                    $(".query>div").each(function(){
+                        
+                        $(this).attr("hidden",$(this).attr("id")!=s);
+                    });
+                    
+                    $.post("query",
+                            {
+                                query: s
+                            },
+                    function (data, status) {
 
-<body>
+                        $(".result").html(data);
+                    });
+                });
+            });
+        </script>
+        <style type="text/css">
+            table,th, td
+            {
+                border: 1px solid black;
+            }
+        </style>
+    </head>
 
-<button>Query1</button>
-<button>Query2</button>
-<button>Query3</button>
-<button>Query4</button>
-<button>Query5</button>
-</body>
+    <body>
+
+        <button>Query1</button>
+        <button>Query2</button>
+        <button>Query3</button>
+        <button>Query4</button>
+        <button>Query5</button>
+        <div class="query">
+            <div id="Query1" hidden>
+                <p>Find all pairs of the form (user,signer), where user is an authorized user of an organization’s credit card, signer is a person at that organization with signature authority, and the balance on the card is within $1,000 of the credit limit. For each user/signer, show Id and Name
+                </p>
+            </div>
+            <div id="Query2" hidden>
+                <p>
+                    Find all users (Id, Name) who own four or more cards and are authorized non-owner users for three or more other cards. 
+                </p>
+            </div>
+            <div id="Query3" hidden>
+                <p>
+                    Find the credit cards (acct. numbers) all of whose signers (i.e., people with signature authority of the organizations that own those cards) also own personal credit cards with credit limits at least $25,000. 
+                </p>
+            </div>
+            <div id="Query4" hidden>
+                <p>
+                    Find all pairs (U,C) where U is an indirect user of the credit card C. (For each user, show Id and Name. For credit cards, show the account number.)
+                    </br>A user U is an indirect user of a credit card C if either
+                    </br>U is a direct user, i.e., U is one of the authorized users of C ; or
+                    </br>U is a direct user of a credit card C2 and the owner of C2 is an indirect user of C.
+                </p>
+            </div>
+            <div id="Query5" hidden>
+                <p>
+                    Find the total of all balances for the credit cards that have Joe as one of the indirect users.
+                </p>
+
+            </div>
+        </div>
+        <div class="result">
+        </div>
+    </body>
 
 </html> 
