@@ -53,6 +53,16 @@ CREATE TABLE "authorized"
 )
 
 
+CREATE VIEW "authuser"  AS
+	SELECT	*
+	FROM	authorized
+;
+
+INSERT INTO "authuser"
+	SELECT S.PId,C.CId
+	FROM signer S,card C
+	WHERE　(S.OId=C.OwnerID)
+;
 
 INSERT INTO "person" (name) VALUES
 	('Ann');
