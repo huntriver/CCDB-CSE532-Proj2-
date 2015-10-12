@@ -38,7 +38,7 @@ public class query extends HttpServlet {
         try {
             Class.forName("org.postgresql.Driver").newInstance();
             String url = "jdbc:postgresql://localhost:5432/CreditCardDB";
-            conn = DriverManager.getConnection(url, "postgres", "hxh8526622");
+            conn = DriverManager.getConnection(url, "postgres", "admin");
             String s = "";
             out.println("<table>");
 
@@ -140,6 +140,13 @@ public class query extends HttpServlet {
                 out.println("</tr>");
             }
             out.println("</table>");
+            String[] lines=s.split("\n");
+            int cols=0;
+            for (int i=0;i<lines.length;i++)
+            {
+                cols=lines[i].length()>cols?lines[i].length():cols;
+            }
+            out.println("<textarea readonly rows="+lines.length+" cols="+cols+">"+s+"</textarea>");
         } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
